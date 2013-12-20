@@ -77,7 +77,32 @@ class SuperCompiler0(val program: Program) extends ASupercompiler with ProcessTr
                         println(format(canonize(beta.expr)))
                         println("==========")
                       }
-                      abstractUp(p, alpha, beta)
+                      
+                      val gen = HEMaterial.toGeneralization(HEMaterial.he(alpha.expr, beta.expr).get)
+                      
+                      println("")
+                      
+                      println("gen: " + gen.term)
+                      println("sub1: " + gen.sub1)
+                      println("ter1: " + myReduce(alpha.expr))
+                      println("red1: " + myReduce(applySubstitution(gen.term, gen.sub1.toMap)))
+                      println("sub2: " + gen.sub2)
+                      println("ter2: " + myReduce(beta.expr))
+                      println("red2: " + myReduce(applySubstitution(gen.term, gen.sub2.toMap)))
+                 
+                      
+                      //println("")
+                      //println(HEMaterial.he(alpha.expr, beta.expr).get)
+                      //println("")
+                      
+                      assert(HEMaterial.myEquivalent(
+                          myReduce(applySubstitution(gen.term, gen.sub1.toMap)), 
+                          myReduce(alpha.expr)))
+                      assert(HEMaterial.myEquivalent(
+                          myReduce(applySubstitution(gen.term, gen.sub2.toMap)), 
+                          myReduce(beta.expr)))
+                          
+                      abstractUpWith(p, alpha, beta, gen)
                       //abstractUp(p, beta, alpha)
                     }
                     case None => drive(p, beta)
@@ -102,7 +127,8 @@ class SuperCompiler0(val program: Program) extends ASupercompiler with ProcessTr
   
   protected def heByCouplingTest(bNode: Node)(aNode: Node): Boolean = aNode.expr match {
     case LetExpression(_, _) => false
-    case aTerm => eligibleForWhistle(bNode.expr) && sameRedex(aNode.expr, bNode.expr) && HE.heByCoupling(aTerm, bNode.expr) && checkControl(aNode, bNode)
+    case aTerm => eligibleForWhistle(bNode.expr) && sameRedex(aNode.expr, bNode.expr) &&
+      HE.heByCoupling(aTerm, bNode.expr) && checkControl(aNode, bNode)
   }
   
   // non-trivial expression
@@ -204,7 +230,7 @@ class SuperCompiler0(val program: Program) extends ASupercompiler with ProcessTr
         val missingChildNode = globalNode.children.find{(n:: ancs).contains(_)}.get
         // finding branch with 'missing' pattern
         val (missingBranch, _) = bs.zip(globalNode.children.tail).find{case (b, childNode) => childNode == missingChildNode}.get
-        val newBs = bs remove {_ == missingBranch}
+        val newBs = bs filterNot {_ == missingBranch}
         val newCaseExp = CaseExpression(sel, newBs)
         val newExpr = con.replaceHole(newCaseExp)
         //println("was:")
@@ -251,7 +277,29 @@ class SuperCompiler0(val program: Program) extends ASupercompiler with ProcessTr
   def abstractUp(t: ProcessTree, up: Node, down: Node): Unit = {
     val upTerm = up.expr
     val downTerm = down.expr
-    val g = msgExt(upTerm, downTerm)
+    val g = msg(upTerm, downTerm)
+    if (g.sub1.isEmpty){
+      t.replace(up, g.term)
+    } else {
+      if (false){
+        println(format(canonize(upTerm)))
+        println("----------")
+        println(format(canonize(downTerm)))
+        println("----------")
+      }
+      var term = g.term
+      var subs = g.sub1
+      if (info) {
+        println(format((LetExpression(g.sub1, g.term))))
+        println("==========")
+      }
+      t.replace(up, LetExpression(g.sub1, g.term))
+    }
+  }
+  
+  def abstractUpWith(t: ProcessTree, up: Node, down: Node, g: Generalization): Unit = {
+    val upTerm = up.expr
+    val downTerm = down.expr
     if (g.sub1.isEmpty){
       t.replace(up, g.term)
     } else {

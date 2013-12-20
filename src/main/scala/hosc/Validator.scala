@@ -12,7 +12,7 @@ object Validator {
     var typeNames = Set[String]()
     var dataConNames = Set[String]()
     var fNames = Set[String]()
-    val fNamesInDefs = Set.empty[String] ++ (p.fs map (_.name))
+    val fNamesInDefs = Set[String]() ++ (p.fs map (_.name))
     
     def valTD(td: TypeDefinition) = {
       var tvs = Set.empty[TypeVariable]

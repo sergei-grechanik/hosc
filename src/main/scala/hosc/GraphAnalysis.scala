@@ -84,7 +84,7 @@ object GraphAnalysis {
    *          in traversed graph.
    */
   private def reverseTraversedGraph(graph: Graph): Graph = {
-    val vertices = (graph.vertices sort {(v1, v2) => v1.number > v2.number}) map {v => Vertex(v.name)}
+    val vertices = (graph.vertices sortWith {(v1, v2) => v1.number > v2.number}) map {v => Vertex(v.name)}
     val vsMap = Map(vertices map {v => (v.name, v)}:_*)
     val arcs = graph.arcs map {a => Arc(vsMap(a.to.name), vsMap(a.from.name))}
     Graph(vertices, arcs)
@@ -153,14 +153,14 @@ object GraphAnalysis {
       case Nil => Nil;
       case _ => {
         val ind = findIndependentComponent(components)
-        val others = components remove {_ == ind}
+        val others = components filterNot {_ == ind}
         ind :: topologicalSort(others, g)
       }
     }
   }
   
   /**
-   *  Finds components of a given graph and then sort them in revert topological order.
+   *  Finds components of a given graph and then sortWith them in revert topological order.
    *
    *  @param    g the graph to be analyzed
    *  @return   strong components of graph sorted in revert topological order

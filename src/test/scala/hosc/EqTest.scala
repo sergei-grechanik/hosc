@@ -6,7 +6,7 @@ import org.junit.Assert._
 import Util._
 
 class EqTest {
-  
+  /*
   @Test def abs() = testEq("eq/abs1.hs", "eq/abs2.hs")
   @Test def add() = testEq("eq/add1.hs", "eq/add2.hs")
   @Test def app() = testEq("eq/app1.hs", "eq/app2.hs")
@@ -27,6 +27,10 @@ class EqTest {
   @Test def pairs() = testEq("eq/pairs1.hs", "eq/pairs2.hs")
   @Test def rep() = testEq("eq/rep1.hs", "eq/rep2.hs")
   @Test def re() = testEq("eq/re1.hs", "eq/re2.hs")
+  @Test def mul() = testEq("eq/mul1.hs", "eq/mul2.hs")
+  @Test def deepseq() = testEq("eq/deepseq1.hs", "eq/deepseq2.hs")
+  @Test def addcomm() = testEq("eq/add-comm1.hs", "eq/add-comm2.hs")*/
+  @Test def deepseqaddz() = testEq("eq/deepseq-addz1.hs", "eq/deepseq-addz2.hs")
   
   def testEq(f1: String, f2: String) = {
     println("***")
@@ -41,6 +45,7 @@ class EqTest {
   def supercompile(file: String) = {
     val program = programFromFile(file)
     val sc = new SuperCompiler0(program)
+    sc.info = true
     val pt = sc.buildProcessTree(program.goal)
     val g = new CodeConstructor(program, pt, true)
     val p = g.generateProgram()

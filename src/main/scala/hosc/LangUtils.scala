@@ -82,7 +82,7 @@ object LangUtils {
       Application0(canonize(head), canonize(arg))
     }
     case ce@CaseExpression0(sel, bs) => {
-      val sortedBranches = bs sort TermAlgebra.compareB
+      val sortedBranches = bs sortWith TermAlgebra.compareB
       val canonizedBranches = sortedBranches map {b => Branch0(b.pattern, canonize(b.term))}
       val canonizedSelector = canonize(sel)
       CaseExpression0(canonizedSelector, canonizedBranches)

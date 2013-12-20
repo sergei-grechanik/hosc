@@ -36,8 +36,8 @@ object Instance {
       case (LambdaAbstraction(v1, b1), LambdaAbstraction(v2, b2)) =>
         walk(b1, b2, (v1, v2) :: binders)
       case (CaseExpression(sel1, bs1), CaseExpression(sel2, bs2)) if bs1.size == bs2.size =>
-        val bs1s = bs1 sort TermAlgebra.compareB
-        val bs2s = bs2 sort TermAlgebra.compareB
+        val bs1s = bs1 sortWith TermAlgebra.compareB
+        val bs2s = bs2 sortWith TermAlgebra.compareB
         walk(sel1, sel2, binders) &&
           List.forall2(bs1s, bs2s){(b1, b2) =>
             b1.pattern.name == b2.pattern.name && walk(b1.term, b2.term, (b1.pattern.args zip b2.pattern.args) ::: binders)

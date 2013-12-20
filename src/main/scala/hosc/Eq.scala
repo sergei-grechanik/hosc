@@ -23,8 +23,8 @@ object Eq {
       case (LambdaAbstraction(v1, b1), LambdaAbstraction(v2, b2)) => 
         eq1(v1, v2, bv1 + v1, bv2 + v2) && eq1(b1, b2, bv1 + v1, bv2 + v2)
       case (CaseExpression(sel1, bs1), CaseExpression(sel2, bs2)) => {
-        val bs1s = bs1 sort compareB1
-        val bs2s = bs2 sort compareB1
+        val bs1s = bs1 sortWith compareB1
+        val bs2s = bs2 sortWith compareB1
         bs1s(0).pattern.name == bs2s(0).pattern.name && 
           eq1(sel1, sel2, bv1, bv2) &&
             List.forall2(bs1s, bs2s){

@@ -169,8 +169,8 @@ object TermAlgebra {
       case (CaseExpression(sel1, Nil), CaseExpression(sel2, Nil)) =>
         eq1(sel1, sel2)
       case (CaseExpression(sel1, bs1), CaseExpression(sel2, bs2)) if bs1.size == bs2.size => {
-        val bs1s = bs1 sort compareB
-        val bs2s = bs2 sort compareB
+        val bs1s = bs1 sortWith compareB
+        val bs2s = bs2 sortWith compareB
         if (bs1s.head.pattern.name == bs2s.head.pattern.name){
           eq1(sel1, sel2) && ((bs1s zip bs2s) forall {
             b => (b._1.pattern.name == b._2.pattern.name) && 
@@ -255,6 +255,20 @@ object TermAlgebra {
       size(e1) + size(e2)
     case CaseExpression(sel, bs) =>
       1 + size(sel) + sum(bs map {b => size(b.term)})
+  }
+  
+  def myReduce(e: Expression): Expression = e match {
+    case _: Variable => e
+    case Constructor(name, args) => Constructor(name, args.map(myReduce(_))) 
+    case LambdaAbstraction(x, term) => LambdaAbstraction(x, myReduce(term))
+    case Application(head, arg) =>
+      myReduce(head) match {
+        case LambdaAbstraction(x, term) =>
+          myReduce(applySubstitution(term, Map(x -> arg)))
+        case newh => Application(newh, myReduce(arg))
+      }
+    case CaseExpression(sel, bs) =>
+      CaseExpression(myReduce(sel), bs.map(b => Branch(b.pattern, myReduce(b.term))) sortWith compareB)
   }
   
   private def sum(ns: List[Int]): Int = {

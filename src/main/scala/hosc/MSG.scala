@@ -182,12 +182,12 @@ object MSG {
 
   }
   
-  private def trivialGen(e1: Expression, e2: Expression) = {
+  def trivialGen(e1: Expression, e2: Expression) = {
 	  val nv = newVar
     Generalization2(nv, List((nv, e1, e2)))
   }
 
-  private def simplify(gen2: Generalization2): Generalization2 = {
+  def simplify(gen2: Generalization2): Generalization2 = {
     gen2.dSub match {
       case Nil => gen2
       case (el@(v, e1, e2)) :: els => {
