@@ -23,3 +23,8 @@ class HigherLevelSuperCompiler(program: Program) extends SuperCompiler0(program)
     n.ancestors.takeWhile(!isGlobal(_)) map {_.expr}
   }
 }
+
+object HigherLevelSuperCompiler extends hosc.sc.SuperCompilerFacade0 {
+  val name = "HigherLevelSuperCompiler"
+  def createSuperCompiler(program: Program) = new HigherLevelSuperCompiler(program)
+}

@@ -89,3 +89,8 @@ class FullPositiveSuperCompiler(program: Program) extends SuperCompiler0(program
     }
   }
 }
+
+object FullPositiveSuperCompiler extends hosc.sc.SuperCompilerFacade0 {
+  val name = "FullPositiveSuperCompiler"
+  def createSuperCompiler(program: Program) = new FullPositiveSuperCompiler(program)
+}

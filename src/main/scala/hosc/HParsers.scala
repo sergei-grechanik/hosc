@@ -90,14 +90,14 @@ trait HTokens extends StdTokens {
 import scala.util.parsing.input.CharArrayReader.EofCh
 class HLexical extends StdLexical with HTokens {
   override def token: Parser[Token] = 
-    (upperCaseLetter ~ rep(letter | digit) ^^ { case first ~ rest => processUIdent(first :: rest mkString "") }
-    | lowerCaseLetter ~ rep(letter | digit) ^^ { case first ~ rest => processLIdent(first :: rest mkString "") }
+    (upperCaseLetter ~ rep(letter | digit | '_') ^^ { case first ~ rest => processUIdent(first :: rest mkString "") }
+    | lowerCaseLetter ~ rep(letter | digit | '_') ^^ { case first ~ rest => processLIdent(first :: rest mkString "") }
     | super.token)
 
   protected def processLIdent(name: String) = if (reserved contains name) Keyword(name) else LIdentifier(name)
   protected def processUIdent(name: String) = if (reserved contains name) Keyword(name) else UIdentifier(name)
   def upperCaseLetter = elem("upper-case-letter", _.isUpperCase)
-  def lowerCaseLetter = elem("lower-case-letter", _.isLowerCase)
+  def lowerCaseLetter = elem("lower-case-letter", c => c.isLowerCase || c == '_')
   
     // see `whitespace in `Scanners'
   override def whitespace: Parser[Any] = rep(

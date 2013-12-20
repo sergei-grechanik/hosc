@@ -87,3 +87,8 @@ class SuperCompiler1(program: Program) extends SuperCompiler0(program){
   }
   
 }
+
+object SuperCompiler1 extends hosc.sc.SuperCompilerFacade0 {
+  val name = "SuperCompiler1"
+  def createSuperCompiler(program: Program) = new SuperCompiler1(program)
+}

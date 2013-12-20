@@ -78,3 +78,8 @@ class FastHLSC(program: Program) extends SuperCompiler0(program){
   }
   }
 }
+
+object FastHLSC extends hosc.sc.SuperCompilerFacade0 {
+  val name = "FastHLSC"
+  def createSuperCompiler(program: Program) = new FastHLSC(program)
+}
